@@ -22,5 +22,8 @@ target_link_libraries(core igl::core igl::glfw)
 
 add_executable(main "main.cpp")
 add_executable(view_mesh "view_mesh.cpp")
+add_executable(cross_field "cross_field.cpp")
+
 target_link_libraries(main core igl::core igl::opengl igl::glfw)
 target_link_libraries(view_mesh core igl::core igl::opengl igl::glfw)
+target_link_libraries(cross_field core igl::core igl::opengl igl::glfw)
