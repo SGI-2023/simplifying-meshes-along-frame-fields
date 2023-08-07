@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# Vim Swap file
+*.swp
+
 # Compiled Object files
 *.slo
 *.lo
@@ -30,3 +33,6 @@
 *.exe
 *.out
 *.app
+
+# Build directory.
+build/
