@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 	igl::read_triangle_mesh(filename, V, F);
 
 	int num_faces = (F.rows())/4;
+	std::cout << "Decimating into 1/4 of faces." << std::endl;
 	igl::decimate(V, F, num_faces, U, G, J, I);
 
 	igl::opengl::glfw::Viewer viewer;
