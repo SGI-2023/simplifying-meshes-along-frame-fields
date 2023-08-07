@@ -1,6 +1,9 @@
 # Simplifyin Meshes along Frame Fields
 
 ### Description
+
+![image](https://github.com/SGI-2023/simplifying-meshes-along-frame-fields/assets/47090776/5b674378-2e2f-4c4a-8d14-e195eea00fc5)
+
 Mesh simplification is useful for adapting high-detail art assets for real-time rendering. However, if we use the common decimation techniques based on iterated local edge collapse, the result may be hard to edit further (as artists tend to work directly with quad meshes that have good edge loop structure), or have irregular shading / deformation artifacts. Local edge collapse / flip techniques tend not to preserve most edge loops in the original mesh.
 On the other hand, simplification techniques designed for quad meshes, such as polychord collapse, can preserve more of the edge loop structure of the original mesh, but are more complex (non-local operations on sequences of quads (polychords), or even global optimization/reconstruction as in quad remeshing).
 Is there a simpler way that allows us to preserve these edge loops throughout simplification but keep ourselves to local operations (edge collapses, flips, regularization)? The original quad mesh might provide a starting point—it seems to define a frame field at most points on the mesh that we can use to perhaps guide our local operations.
