@@ -20,3 +20,4 @@ Students can use the geometry library of their choice that their are most comfor
 3. With a quad mesh, and a frame field with 2 directions, this seems easy. What about for a triangulated quad mesh where the original quad edges aren’t super obvious?
 4. Try decimating a triangulated quad mesh, and measuring how well the result aligns with frame field directions.
 5. Can we use all local collapse / flip / tangent smoothing to obtain results similar to quad simplification, and show that it gives a better result for the measure than triangle decimation?
+
