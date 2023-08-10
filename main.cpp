@@ -207,14 +207,14 @@ int main(int argc, char* argv[])
       }
     }
 
-    std::cout << "Direction 1: " << max_alignment[0].first << ", "
-      << max_alignment[0].second.first << ", " << max_alignment[0].second.second << std::endl;
-    std::cout << "Direction 2: " << max_alignment[1].first << ", "
-      << max_alignment[1].second.first << ", " << max_alignment[1].second.second << std::endl;
-    std::cout << "Direction 3: " << max_alignment[2].first << ", "
-      << max_alignment[2].second.first << ", " << max_alignment[2].second.second << std::endl;
-    std::cout << "Direction 4: " << max_alignment[3].first << ", "
-      << max_alignment[3].second.first << ", " << max_alignment[3].second.second << std::endl;
+    //std::cout << "Direction 1: " << max_alignment[0].first << ", "
+    //  << max_alignment[0].second.first << ", " << max_alignment[0].second.second << std::endl;
+    //std::cout << "Direction 2: " << max_alignment[1].first << ", "
+    //  << max_alignment[1].second.first << ", " << max_alignment[1].second.second << std::endl;
+    //std::cout << "Direction 3: " << max_alignment[2].first << ", "
+    //  << max_alignment[2].second.first << ", " << max_alignment[2].second.second << std::endl;
+    //std::cout << "Direction 4: " << max_alignment[3].first << ", "
+    //  << max_alignment[3].second.first << ", " << max_alignment[3].second.second << std::endl;
 
     // typedef Eigen::MatrixXi::Scalar Index;
     // typedef Eigen::Matrix<Index,Eigen::Dynamic,2> MatrixX2I;
