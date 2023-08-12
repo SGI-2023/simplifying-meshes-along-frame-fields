@@ -37,8 +37,8 @@ int main(int argc, char *argv[]) {
   VectorXd H = HN.rowwise().norm();
 
   // Compute curvature directions via quadric fitting
-  MatrixXd PD1, PD2;
-  VectorXd PV1, PV2;
+  MatrixXd PD1, PD2; // V * 3      Where V is the number of the Vertices
+  VectorXd PV1, PV2; // V          Where V is the number of the Vertices
   igl::principal_curvature(V, F, PD1, PD2, PV1, PV2);
   // mean curvature
   H = 0.5 * (PV1 + PV2);
