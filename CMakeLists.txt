@@ -7,6 +7,7 @@ option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" OFF)
 option(LIBIGL_GLFW       "Use GLFW"           ON)
 
 include(libigl)
+igl_include(copyleft comiso)
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 # Add your project files
@@ -23,7 +24,9 @@ target_link_libraries(core igl::core igl::glfw)
 add_executable(main "main.cpp")
 add_executable(view_mesh "view_mesh.cpp")
 add_executable(cross_field "cross_field.cpp")
+add_executable(frame_field_tutorial "frame_field_tutorial.cpp")
 
 target_link_libraries(main core igl::core igl::opengl igl::glfw)
 target_link_libraries(view_mesh core igl::core igl::opengl igl::glfw)
 target_link_libraries(cross_field core igl::core igl::opengl igl::glfw)
+target_link_libraries(frame_field_tutorial core igl::core igl::glfw igl_copyleft::comiso)
