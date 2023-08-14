@@ -4,9 +4,6 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/decimate.h>
 #include <igl/principal_curvature.h>
-#include <igl/invert_diag.h>
-#include <igl/cotmatrix.h>
-#include <igl/massmatrix.h>
 
 #include "utils.h"
 

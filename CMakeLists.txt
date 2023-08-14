@@ -22,7 +22,5 @@ add_library(core ${SRCFILES})
 target_link_libraries(core igl::core igl::glfw)
 
 add_executable(main "main.cpp")
-add_executable(frame_field_tutorial "frame_field_tutorial.cpp")
 
 target_link_libraries(main core igl::core igl::opengl igl::glfw)
-target_link_libraries(frame_field_tutorial core igl::core igl::glfw igl_copyleft::comiso)
