@@ -1,35 +1,27 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
-#include <igl/read_triangle_mesh.h>
-#include <igl/opengl/glfw/Viewer.h>
-#include <igl/decimate.h>
 #include <Eigen/Core>
-
 #include <iostream>
 #include <string>
 #include <cmath>
 
-void view_mesh(const Eigen::MatrixXd& V,
-							 const Eigen::MatrixXi& F);
+using namespace Eigen;
 
-void normal_vector(const Eigen::RowVector3d& v,
-									 const Eigen::RowVector3d& w,
-									 Eigen::RowVector3d& r);
+void normal_vector(const RowVector3d &v,
+				   const RowVector3d &w,
+				   RowVector3d &r);
 
-void projection_onto_plane(const Eigen::RowVector3d& v,
-													 const Eigen::RowVector3d& n,
-													 Eigen::RowVector3d& r);
+void projection_onto_plane(const RowVector3d &v,
+						   const RowVector3d &n,
+						   RowVector3d &r);
 
-void bisector_vector(const Eigen::RowVector3d& v,
-										 const Eigen::RowVector3d& w,
-										 Eigen::RowVector3d& r);
+void bisector_vector(const RowVector3d &v,
+					 const RowVector3d &w,
+					 RowVector3d &r);
 
-double angle_between_vectors(const Eigen::RowVector3d& v,
-														 const Eigen::RowVector3d w);
+double angle_between_vectors(const RowVector3d &v,
+							 const RowVector3d w);
 
-double alignment_function(const Eigen::RowVector3d& v,
-													const Eigen::RowVector3d& w,
-													const Eigen::RowVector3d& p_edge);
-
-#endif
+double alignment_function(const RowVector3d &v,
+						  const RowVector3d &w,
+						  const RowVector3d &p_edge);
