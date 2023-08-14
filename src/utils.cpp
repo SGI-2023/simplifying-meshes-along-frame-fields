@@ -63,3 +63,45 @@ double alignment_function(const Eigen::RowVector3d& v,
 	
 	return f;
 }
+void compute_before(const int e,
+	const Eigen::MatrixXd& V,
+	const Eigen::MatrixXi & E,
+	const Eigen::MatrixXi & F,
+	const Eigen::VectorXi & EMAP,
+	const Eigen::MatrixXi & EF,
+	const Eigen::MatrixXi & EI, 
+	const Eigen::MatrixXd & v,//frame field 1s
+	const Eigen::MatrixXd & w,//frame field 2s
+	int & valenceSum, 
+  	double & alignment){
+		std::vector<int> Nv;
+  		std::vector<int> Nf;
+		igl::circulation(e, true, F,EMAP,EF,EI, Nv,Nf);
+		valenceSum = Nv.size();
+		int alignmentTotal = 0;
+		for (int i = 0; i < valenceSum; i++) {
+			alignmentTotal += alignment_function(v.row(Nv[i]), w.row(Nv[i]),V.row(Nv[i])-V.row(E.col(0)(e)));
+		}
+		igl::circulation(e, false, F,EMAP,EF,EI, Nv,Nf);
+		valenceSum += Nv.size();
+		for (int i = 1; i < valenceSum; i++) {
+			
+			alignmentTotal += alignment_function(v.row(Nv[i]), w.row(Nv[i]),V.row(Nv[i])-V.row(E.col(1)(e)));
+		}
+		alignment = alignmentTotal/(valenceSum-1);
+  }
+// cost function, thinking about helper function
+	// needs: p1, p2, valence p1, valence p2,
+	// 		avged alignment for surroundings pre-collapse, 
+	// 		avged alignment for surroundings post-collapse.--needs new point.
+// double avg_alignment(v1, list_of_edges_indexed_into_vertex_list, &vertex_list, &frame_field_list)
+//		takes in a list of edges (see below), calls alignment function on all of them and avgs/normalizes.
+//		returns this value. 
+// void get_edges(vertex_list, vertex_index_from, vertex_index_exclude, &edge_list)
+// 		returns list of edges (indexed into vertices) emanating from vertex_index_from
+//		except for the one that goes to vertex_index_exclude. 
+//		If vertex_index_exclude is not present, then just return all of the edges
+//		returns them in &edge_list
+// void get_all_edges(vertex_list, edge_index, &edge_list)
+//		use the above function to get all edges emanating from a pair of vertices/an edge
+//		return the edges in &edge_list
