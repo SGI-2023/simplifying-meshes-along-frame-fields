@@ -7,7 +7,6 @@ option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" OFF)
 option(LIBIGL_GLFW       "Use GLFW"           ON)
 
 include(libigl)
-igl_include(copyleft comiso)
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 # Add your project files
