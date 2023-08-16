@@ -32,8 +32,8 @@ void Mesh::initialize_decimation_callbacks()
                                     Eigen::RowVectorXd &p)
   {
     // cost = frame_field_alignment_data(e, E); -> another cost function based on only frame-field alignment
-    qcoarsen_based_cost(e, V, E, F, EMAP, EF, EI, p, cost); 
     p = 0.5 * (V.row(E(e, 0)) + V.row(E(e, 1)));
+    qcoarsen_based_cost(e, V, E, F, EMAP, EF, EI, p, cost); 
   };
 
   custom_post_collapse_callback = [&](
@@ -158,7 +158,7 @@ void Mesh::decimate()
   int curr_nF, orig_nF, target_nF;
   curr_nF = F.rows();
   orig_nF = F.rows();
-  target_nF = 3 * F.rows() / 4;
+  target_nF = F.rows() * 3/4;
 
   igl::max_faces_stopping_condition(curr_nF, orig_nF, target_nF, stopping_condition_callback);
 
@@ -261,7 +261,7 @@ void Mesh::compute_before(const int e,
 		igl::circulation(e, true, F,EMAP,EF,EI, Nv,Nf);
 		valenceSum = Nv.size();
 
-		int alignmentTotal = 0;
+		double alignmentTotal = 0;
 		for (int i = 0; i < valenceSum; i++) {
 			if (i != 0) {
 				neighbors.push_back(Nv[i]);
@@ -272,12 +272,10 @@ void Mesh::compute_before(const int e,
 
 		for (int i = 1; i < Nv.size(); i++) {
 			neighbors.push_back(Nv[i]);
-      // std::cout << i;
 			alignmentTotal += alignment_function(PD1.row(Nv[i]), PD2.row(Nv[i]),V.row(Nv[i])-V.row(E.col(1)(e)));
-      // std::cout << 100+i << std::endl;
     }
     alignment = alignmentTotal/(valenceSum+Nv.size()-1);
-    if (valenceSum != 6) {valenceSum = 1;}
+    valenceSum = valenceSum == 6 ? 1 : 0;
 		valenceSum += Nv.size() == 6 ? 1 : 0;
 }
 void Mesh::compute_after(
@@ -287,11 +285,9 @@ void Mesh::compute_after(
 	int & valenceSum,
   double & alignment)
 {
-		int alignmentTotal = 0;
+		double alignmentTotal = 0;
 		for (int i = 0; i < neighbors.size(); i++) {
-      // std::cout << 200+i;
 			alignmentTotal += alignment_function(PD1.row(neighbors[i]), PD2.row(neighbors[i]),V.row(neighbors[i])-p);
-      // std::cout << 300+i << std::endl;
     }
 		alignment = alignmentTotal/neighbors.size();
 		valenceSum = neighbors.size() == 6 ? 1 : 0;
@@ -311,15 +307,10 @@ void Mesh::qcoarsen_based_cost(
   int idealCountB, idealCountA;
   double alignB, alignA;
   std::vector<int> neighbors;
-  
   compute_before(e,V,E,F,EMAP,EF,EI,idealCountB,alignB,neighbors);
   compute_after(V, neighbors, p, idealCountA, alignA);
-  if (e % 200 == 0 || e > 34590) {
-    std::cout << "before after complete: ";
-    std::cout << e << std::endl;
-  }
-  double alpha = 0.001;
-  double total_ideal = V.cols();//for now, as a placeholder
+  double alpha = 0.01;
+  double total_ideal = V.rows();//for now, as a placeholder
   double vB_A = (V.cols()+1)*total_ideal/(V.cols()*(total_ideal+idealCountA-idealCountB));
   double dist = (V.row(E(e,0))-V.row(E(e,1))).norm();
   double weight = 1;//placeholder
