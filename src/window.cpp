@@ -20,6 +20,26 @@ void Window::visualizeFrameFields(RowVector3d maxCurvatureColor, RowVector3d min
       minCurvatureColor);
 }
 
+void Window::visualizeMetricOnEdges()
+{
+  // Get edges indexed into vertex ids
+  MatrixXi E;
+  igl::edges(mesh.F, E);
+  //std::cout << mesh.F.rows() << " " << E.rows() << " " << E.cols() << std::endl;
+  // Z is a dummy measure that should calculate the length of each edge
+  VectorXd Z;
+  Z.resize(E.rows());
+  for (int e = 0; e < E.rows(); e++)
+  {
+    Z(e) = (mesh.V.row(E.col(0)(e)) - mesh.V.row(E.col(1)(e))).norm();
+  }
+  // Generate colormap based on Z
+  MatrixXd C;
+  igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, Z, true, C);
+  std::cout << C.rows() << std::endl;
+  viewer.data().set_colormap(C);
+}
+
 void Window::initialize_callbacks()
 {
   const auto &key_down =
@@ -34,7 +54,7 @@ void Window::initialize_callbacks()
     case 'V':
     case 'v':
       mesh.decimate();
-      
+
       viewer.data().clear();
       viewer.data().set_mesh(mesh.V, mesh.F);
       viewer.data().set_face_based(true);
@@ -42,11 +62,14 @@ void Window::initialize_callbacks()
     case 'R':
     case 'r':
       mesh.frame_field_alignment_data();
-      
+
       viewer.data().clear();
       viewer.data().set_mesh(mesh.V, mesh.F);
       viewer.core().align_camera_center(mesh.V, mesh.F);
       viewer.data().set_data(mesh.A);
+    case 'K':
+    case 'k':
+      visualizeMetricOnEdges();
     default:
       return false;
     }
