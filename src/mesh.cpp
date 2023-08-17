@@ -67,14 +67,18 @@ void Mesh::initialize_decimation_callbacks()
       return false;
 
     // update the frame field by averaging the frame field of the two vertices that are collapsed
-    PD1.row(v1) = 0.5 * (PD1.row(v1) + PD1.row(v2));
-    PV1.row(v1) = 0.5 * (PV1.row(v1) + PV1.row(v2));
-    PD2.row(v1) = 0.5 * (PD2.row(v1) + PD2.row(v2));
-    PV2.row(v1) = 0.5 * (PV2.row(v1) + PV2.row(v2));
+    PD1.row(v2) = PD1.row(v1) = 0.5 * (PD1.row(v1) + PD1.row(v2));
+    PV1.row(v2) = PV1.row(v1) = 0.5 * (PV1.row(v1) + PV1.row(v2));
+    PD2.row(v2) = PD2.row(v1) = 0.5 * (PD2.row(v1) + PD2.row(v2));
+    PV2.row(v2) = PV2.row(v1) = 0.5 * (PV2.row(v1) + PV2.row(v2));
+    // Note, we are updating both as it seems there's no convention for which we know which vertex is the one kept
 
-    // PD1.row(v1) and PD2.row(v1) should be normalized
+
+    // dir should be normalized
     PD1.row(v1).normalize();
     PD2.row(v1).normalize();
+    PD1.row(v2).normalize();
+    PD2.row(v2).normalize();
 
     // 4 normalized vectors: PD1.row(v1), PD2.row(v1), - PD1.row(v1), - PD2.row(v1)
     std::vector<VectorXd> Dir =
@@ -99,13 +103,18 @@ void Mesh::initialize_decimation_callbacks()
 
       for (int i = 0; i < 3; i++)
       {
-        int ei = EMAP(f * 3 + i);             // Need to Make sure this indexing is right
-        if (E(ei, 0) == v1 || E(ei, 1) == v1) // the edge is already there, no flip to generate it
+        int ei = EMAP(i * F.rows() + f);             // Need to Make sure this indexing is right
+
+        bool v1_in = E(ei, 0) == v1 || E(ei, 1) == v1;
+        bool v2_in = E(ei, 0) == v2 || E(ei, 1) == v2;
+
+        // the edge is already there, no flip to generate it
+        if (v1_in || v2_in)
         {
           // just making vs always v1 and ve the other vertex
-          int vs = v1;
+          int vs = v1_in ? v1 : v2;
           int ve = E(ei, 1);
-          if (E(ei, 1) == v1)
+          if (E(ei, 1) == vs)
             ve = E(ei, 0);
 
           Vector3d vs_e_vec = V.row(ve) - V.row(vs);
@@ -156,6 +165,16 @@ void Mesh::initialize_decimation_callbacks()
         }
       }
     }
+      
+    std::cout << "Direction 1: " << max_alignment[0].first << ", "
+      << max_alignment[0].second.first << ", " << max_alignment[0].second.second << std::endl;
+    std::cout << "Direction 2: " << max_alignment[1].first << ", "
+      << max_alignment[1].second.first << ", " << max_alignment[1].second.second << std::endl;
+    std::cout << "Direction 3: " << max_alignment[2].first << ", "
+      << max_alignment[2].second.first << ", " << max_alignment[2].second.second << std::endl;
+    std::cout << "Direction 4: " << max_alignment[3].first << ", "
+      << max_alignment[3].second.first << ", " << max_alignment[3].second.second << std::endl;
+
     return true;
   };
 }
