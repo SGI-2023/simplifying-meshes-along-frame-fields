@@ -178,16 +178,16 @@ void Mesh::initialize_decimation_callbacks()
     std::cout << "direction 4: " << max_alignment[3].first << ", "
       << max_alignment[3].second.first << ", " << max_alignment[3].second.second << std::endl;*/
 
-    //typedef Eigen::Index int;
-    typedef Eigen::Matrix<int,Eigen::Dynamic,2> MatrixX2I;
+    /// This part gets stuck after some iterations (TODO: Hossam)
+    /*typedef Eigen::Matrix<int,Eigen::Dynamic,2> MatrixX2I;
     MatrixX2I En,uEn;
     Eigen::VectorXi EMAPn;
     std::vector<std::vector<int> > uE2En;
     Eigen::Matrix<int, Eigen::Dynamic, 3> Fn(F);
-    igl::unique_edge_map(F, En, uEn, EMAPn, uE2En);
+    igl::unique_edge_map(F, En, uEn, EMAPn, uE2En);*/
 
     // now we have the best alignment for each direction, we can flip the edges accordingly
-    /// The code below crashes after some iterations (index out of range), not yet sure why tho.
+    /// The code below crashes after some iterations (index out of range), not yet sure why tho. (TODO: Hossam)
     //for (int j = 0; j < 4; j++)
     //{
     //  if (max_alignment[j].second.first != -1)
@@ -208,7 +208,7 @@ void Mesh::initialize_decimation_callbacks()
 
 void Mesh::decimate()
 {
-  std::cout << "Decimating into 3/4 of faces." << std::endl;
+  std::cout << "Decimating into 0.75 of faces." << std::endl;
 
   std::cout << "Face and Vert Size: " << F.rows() << " " << V.rows() << std::endl;
   std::cout << "PD PV Size: " << PD1.rows() << " " << PD2.rows() << " " << PV1.rows() << " " << PV2.rows() << std::endl;
@@ -216,7 +216,7 @@ void Mesh::decimate()
   int curr_nF, orig_nF, target_nF;
   curr_nF = F.rows();
   orig_nF = F.rows();
-  target_nF = F.rows() * 3/4;
+  target_nF = F.rows() * 0.75;
 
   igl::max_faces_stopping_condition(curr_nF, orig_nF, target_nF, stopping_condition_callback);
 
