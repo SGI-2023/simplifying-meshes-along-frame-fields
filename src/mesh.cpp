@@ -42,10 +42,15 @@ void Mesh::initialize_decimation_callbacks()
     int v1 = E(e, 0);
     int v2 = E(e, 1);
 
+    // update the frame field by averaging the frame field of the two vertices that are collapsed
     PD1.row(v1) = 0.5 * (PD1.row(v1) + PD1.row(v2));
     PV1.row(v1) = 0.5 * (PV1.row(v1) + PV1.row(v2));
     PD2.row(v1) = 0.5 * (PD2.row(v1) + PD2.row(v2));
     PV2.row(v1) = 0.5 * (PV2.row(v1) + PV2.row(v2));
+
+    // PD1.row(v1) and PD2.row(v1) should be normalized
+    PD1.row(v1).normalize();
+    PD2.row(v1).normalize();
 
     // 4 normalized vectors: PD1.row(v1), PD2.row(v1), - PD1.row(v1), - PD2.row(v1)
     std::vector<VectorXd> Dir =
