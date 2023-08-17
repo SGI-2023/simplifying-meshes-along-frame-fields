@@ -15,7 +15,17 @@ void Mesh::initialize_decimation_callbacks()
                                      const MatrixXd &C,
                                      const int e) -> bool
   {
-    V2Fe = igl::circulation(e, true, EMAP, EF, EI);
+    // The circulation functino only returns faces around one vertex of the edge (circulates the edge ccw or cw)
+    // Thus, we get both and then insert them into a set to get a unique list of faces
+    V2Fe.clear();
+    std::vector<int> V2FeVec = igl::circulation(e, true, EMAP, EF, EI);
+    V2Fe.insert(V2FeVec.begin(), V2FeVec.end());
+    V2FeVec = igl::circulation(e, false, EMAP, EF, EI);
+    V2Fe.insert(V2FeVec.begin(), V2FeVec.end());
+
+    v1 = E(e, 0);
+    v2 = E(e, 1);
+
     return true;
   };
 
@@ -55,9 +65,6 @@ void Mesh::initialize_decimation_callbacks()
   {
     if (!collapsed)
       return false;
-
-    int v1 = E(e, 0);
-    int v2 = E(e, 1);
 
     // update the frame field by averaging the frame field of the two vertices that are collapsed
     PD1.row(v1) = 0.5 * (PD1.row(v1) + PD1.row(v2));

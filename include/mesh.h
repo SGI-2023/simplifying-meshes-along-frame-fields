@@ -4,6 +4,7 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/decimate.h>
 #include <igl/principal_curvature.h>
+#include <set>
 
 #include "utils.h"
 
@@ -14,8 +15,10 @@ public:
     MatrixXi F;
     MatrixXd PD1, PD2;     // V * 3      Where V is the number of the Vertices
     VectorXd PV1, PV2;     // V          Where V is the number of the Vertices
-    std::vector<int> V2Fe; // adjacent faces to vertices
+    std::set<int> V2Fe;    // adjacent faces to vertices
     VectorXd A;            // frame field alignment vertex-based cost vector
+
+    int v1, v2; 
 
     igl::decimate_pre_collapse_callback custom_pre_collapse_callback;
     igl::decimate_post_collapse_callback custom_post_collapse_callback;
