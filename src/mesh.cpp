@@ -369,7 +369,7 @@ void Mesh::qcoarsen_based_cost(
   compute_after(V, neighbors, p, idealCountA, alignA);
   double alpha = 0.01;
   double total_ideal = V.rows();//for now, as a placeholder
-  double vB_A = (V.cols()+1)*total_ideal/(V.cols()*(total_ideal+idealCountA-idealCountB));
+  double vB_A = (V.rows()+1)*total_ideal/(V.rows()*(total_ideal+idealCountA-idealCountB));
   double dist = (V.row(E(e,0))-V.row(E(e,1))).norm();
   double weight = 1;//placeholder
   cost = (vB_A + alpha)*(vB_A + alpha)*(alignB/alignA+alpha)*(alignB/alignA+alpha)*(dist*weight+alpha)*(dist*weight+alpha);
