@@ -53,5 +53,5 @@ double alignment_function(const RowVector3d &v,
 	else if (theta < M_PI)
 		f = std::pow(std::cos(M_PI / (2 * alpha) * (theta - M_PI)), 2);
 
-	return f;
+	return 1-f;
 }

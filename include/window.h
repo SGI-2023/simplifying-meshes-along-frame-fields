@@ -16,4 +16,5 @@ public:
 
     void initialize_callbacks();
     void visualizeFrameFields(RowVector3d maxCurvatureColor, RowVector3d minCurvatureColor);
+    void visualizeMetricOnEdges();
 };
