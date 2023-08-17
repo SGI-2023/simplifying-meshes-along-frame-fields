@@ -4,6 +4,7 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/decimate.h>
 #include <igl/principal_curvature.h>
+#include <igl/flip_edge.h>
 #include <set>
 
 #include "utils.h"

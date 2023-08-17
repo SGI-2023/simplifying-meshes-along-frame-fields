@@ -83,10 +83,10 @@ void Mesh::initialize_decimation_callbacks()
     // 4 normalized vectors: PD1.row(v1), PD2.row(v1), - PD1.row(v1), - PD2.row(v1)
     std::vector<VectorXd> Dir =
         {
-            PD1.row(v1).normalized(),
-            PD2.row(v1).normalized(),
-            -PD1.row(v1).normalized(),
-            -PD2.row(v1).normalized()};
+            PD1.row(v1),
+            PD2.row(v1),
+            -PD1.row(v1),
+            -PD2.row(v1)};
 
     // store max alignment -> pair (max_aligment, (edge_index, if_flipped))
     std::vector<std::pair<double, std::pair<int, bool>>> max_alignment = {
@@ -101,18 +101,22 @@ void Mesh::initialize_decimation_callbacks()
       if (f == f1 || f == f2 || f >= F.rows())
         continue;
 
+      int vs = 0;
+      if (F(f, 0) == v1 || F(f, 1) == v1 || F(f, 2) == v1)
+        vs = v1;
+      else if (F(f, 0) == v2 || F(f, 1) == v2 || F(f, 2) == v2)
+        vs = v2;
+      else
+        continue;
+
       for (int i = 0; i < 3; i++)
       {
         int ei = EMAP(i * F.rows() + f);             // Need to Make sure this indexing is right
 
-        bool v1_in = E(ei, 0) == v1 || E(ei, 1) == v1;
-        bool v2_in = E(ei, 0) == v2 || E(ei, 1) == v2;
-
         // the edge is already there, no flip to generate it
-        if (v1_in || v2_in)
+        if (E(ei, 0) == vs || E(ei, 1) == vs)
         {
           // just making vs always v1 and ve the other vertex
-          int vs = v1_in ? v1 : v2;
           int ve = E(ei, 1);
           if (E(ei, 1) == vs)
             ve = E(ei, 0);
@@ -133,7 +137,6 @@ void Mesh::initialize_decimation_callbacks()
         }
         else // the edge is not there, flip to generate it
         {
-          int vs = v1;
           // ve would be the on the other side of the edge, first get the face:
           int f_opposite = EF(ei, 0);
           if (f_opposite == f)
@@ -166,14 +169,38 @@ void Mesh::initialize_decimation_callbacks()
       }
     }
       
-    std::cout << "Direction 1: " << max_alignment[0].first << ", "
+    /*std::cout << "direction 1: " << max_alignment[0].first << ", "
       << max_alignment[0].second.first << ", " << max_alignment[0].second.second << std::endl;
-    std::cout << "Direction 2: " << max_alignment[1].first << ", "
+    std::cout << "direction 2: " << max_alignment[1].first << ", "
       << max_alignment[1].second.first << ", " << max_alignment[1].second.second << std::endl;
-    std::cout << "Direction 3: " << max_alignment[2].first << ", "
+    std::cout << "direction 3: " << max_alignment[2].first << ", "
       << max_alignment[2].second.first << ", " << max_alignment[2].second.second << std::endl;
-    std::cout << "Direction 4: " << max_alignment[3].first << ", "
-      << max_alignment[3].second.first << ", " << max_alignment[3].second.second << std::endl;
+    std::cout << "direction 4: " << max_alignment[3].first << ", "
+      << max_alignment[3].second.first << ", " << max_alignment[3].second.second << std::endl;*/
+
+    //typedef Eigen::Index int;
+    typedef Eigen::Matrix<int,Eigen::Dynamic,2> MatrixX2I;
+    MatrixX2I En,uEn;
+    Eigen::VectorXi EMAPn;
+    std::vector<std::vector<int> > uE2En;
+    Eigen::Matrix<int, Eigen::Dynamic, 3> Fn(F);
+    igl::unique_edge_map(F, En, uEn, EMAPn, uE2En);
+
+    // now we have the best alignment for each direction, we can flip the edges accordingly
+    /// The code below crashes after some iterations (index out of range), not yet sure why tho.
+    //for (int j = 0; j < 4; j++)
+    //{
+    //  if (max_alignment[j].second.first != -1)
+    //  {
+    //  	int ei = max_alignment[j].second.first;
+    //  	bool flip = max_alignment[j].second.second;
+    //  	if (flip)
+    //  	{
+    //  	  // use the edge flip function
+    //  	  igl::flip_edge(Fn, En, uEn, EMAPn, uE2En,  ei);
+    //  	}
+    //  }
+    //}
 
     return true;
   };
