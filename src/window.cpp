@@ -36,8 +36,8 @@ void Window::visualizeMetricOnEdges()
   // Generate colormap based on Z
   MatrixXd C;
   igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, Z, true, C);
-  std::cout << C.rows() << std::endl;
-  viewer.data().set_colormap(C);
+  viewer.data().show_lines = false;
+  viewer.data().set_edges(mesh.V,E,C);
 }
 
 void Window::initialize_callbacks()
