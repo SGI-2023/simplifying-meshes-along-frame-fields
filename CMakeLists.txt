@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(some-project)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 ### libIGL options: choose between header only and compiled static library
 option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" OFF)
