@@ -445,5 +445,4 @@ void Mesh::qcoarsen_based_cost(
   
   // Add quadric error term to the cost
   cost *= quadricErrorTerm.norm();
-  //std::cout<< "cost " << cost << std::endl;
 }
