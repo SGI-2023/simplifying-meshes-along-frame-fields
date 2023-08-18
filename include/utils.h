@@ -25,3 +25,9 @@ double angle_between_vectors(const RowVector3d &v,
 double alignment_function(const RowVector3d &v,
 						  const RowVector3d &w,
 						  const RowVector3d &p_edge);
+						  
+double alignment_function(const RowVector3d &v1,
+						  const RowVector3d &w1,
+						  const RowVector3d &v2,
+						  const RowVector3d &w2,
+						  const RowVector3d &p_edge);

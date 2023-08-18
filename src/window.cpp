@@ -27,17 +27,20 @@ void Window::visualizeMetricOnEdges()
   igl::edges(mesh.F, E);
   //std::cout << mesh.F.rows() << " " << E.rows() << " " << E.cols() << std::endl;
   // Z is a dummy measure that should calculate the length of each edge
-  VectorXd Z;
-  Z.resize(E.rows());
-  for (int e = 0; e < E.rows(); e++)
-  {
-    Z(e) = (mesh.V.row(E.col(0)(e)) - mesh.V.row(E.col(1)(e))).norm();
-  }
+  // VectorXd Z;
+  // Z.resize(E.rows());
+  // for (int e = 0; e < E.rows(); e++)
+  // {
+  //   Z(e) = (mesh.V.row(E.col(0)(e)) - mesh.V.row(E.col(1)(e))).norm();
+  // }
   // Generate colormap based on Z
   MatrixXd C;
-  igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, Z, true, C);
+  mesh.frame_field_alignment_data(E);
+  igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, mesh.AE, true, C);
   std::cout << C.rows() << std::endl;
-  viewer.data().set_colormap(C);
+  // viewer.data().set_colormap(C);
+  viewer.data().set_edges(mesh.V,E,C);
+  viewer.data().show_lines = false;
 }
 
 void Window::initialize_callbacks()

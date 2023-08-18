@@ -301,6 +301,58 @@ double Mesh::frame_field_alignment_data(const int e, const MatrixXi &E)
   return std::max(f1, f2);
 }
 
+//edge-based global
+void Mesh::frame_field_alignment_data(const MatrixXi &E){
+  AE.resize(E.rows());
+  // Z is a dummy measure that should calculate the length of each edge
+  RowVector3d plane_normal1;
+  RowVector3d plane_normal2;
+  RowVector3d p_edge;
+  RowVector3d v1;
+  RowVector3d v2;
+  RowVector3d w1;
+  RowVector3d w2;
+  double thetav1;
+  double thetaw1;
+  double thetav2;
+  double thetaw2;
+  RowVector3d p1;
+  RowVector3d p2;
+  double A1;
+  double A2;
+  double min = 500;
+  double max = 0;
+  double pi =  3.14159;
+  for (int e = 0; e<E.rows(); e++) {
+    v1 = PD1.row(E.col(0)(e));
+    w1 = PD2.row(E.col(0)(e));
+    p_edge = V.row(E.col(0)(e))-V.row(E.col(1)(e));
+    normal_vector(v1, w1, plane_normal1);
+   
+    projection_onto_plane(p_edge, plane_normal1, p1);
+    thetav1 = angle_between_vectors(p1, v1);
+    thetaw1 = angle_between_vectors(p1, w1);
+    thetav1 = thetav1 > pi/2 ? pi - thetav1 : thetav1;
+    thetaw1 = thetaw1 > pi/2 ? pi - thetaw1 : thetaw1;  
+    v2 = PD1.row(E.col(1)(e));
+    w2 = PD2.row(E.col(1)(e));
+    normal_vector(v2, w2, plane_normal2);
+    projection_onto_plane(p_edge, plane_normal2, p2);
+    thetav2 = angle_between_vectors(p2, v2);
+    thetaw2 = angle_between_vectors(p2, w2);
+    thetav2 = thetav2 > pi/2 ? pi - thetav2 : thetav2;
+    thetaw2 = thetaw2 > pi/2 ? pi - thetaw2 : thetaw2; 
+    // A1 = thetav1 < thetaw1 ? thetav1 : thetaw1;
+    // // A2 = thetav2 < thetaw2 ? thetav2 : thetaw2;
+    AE(e) =(thetav1 + thetav2)/2 < (thetaw1 + thetaw2)/2 ? (thetav1 + thetav2)/2 : (thetaw1 + thetaw2)/2;
+    // AE(e) = (A1 + A2)/2;
+    // AE(e) = A1;
+    min = min < AE(e) ? min : AE(e);
+    max = max > AE(e) ? max : AE(e);
+  }
+  std::cout << min <<std::endl;
+  std::cout << max <<std::endl;
+}
 // qcoarsen_based_cost and its helper functions 
 
 void Mesh::compute_before(const int e,
@@ -310,10 +362,11 @@ void Mesh::compute_before(const int e,
 	const Eigen::VectorXi & EMAP,
 	const Eigen::MatrixXi & EF,
 	const Eigen::MatrixXi & EI,
-	int & valenceSum,
+	int & valenceScore,
   	double & alignment,
 	std::vector<int> & neighbors)
 {
+    int valenceSum;
 		std::vector<int> Nv;
   	std::vector<int> Nf;
 		igl::circulation(e, true, F,EMAP,EF,EI, Nv,Nf);
@@ -324,17 +377,22 @@ void Mesh::compute_before(const int e,
 			if (i != 0) {
 				neighbors.push_back(Nv[i]);
 			}
-			alignmentTotal += alignment_function(PD1.row(Nv[i]), PD2.row(Nv[i]),V.row(Nv[i])-V.row(E.col(0)(e)));
-		}
+			// alignmentTotal += alignment_function(PD1.row(Nv[i]), PD2.row(Nv[i]),V.row(Nv[i])-V.row(E.col(0)(e)));
+      alignmentTotal += alignment_function(PD1.row(Nv[i]), PD2.row(Nv[i]),PD1.row(E.col(0)(e)), PD2.row(E.col(0)(e)),V.row(Nv[i])-V.row(E.col(0)(e)));
+
+    }
 		igl::circulation(e, false, F,EMAP,EF,EI, Nv,Nf);
 
 		for (int i = 1; i < Nv.size(); i++) {
 			neighbors.push_back(Nv[i]);
-			alignmentTotal += alignment_function(PD1.row(Nv[i]), PD2.row(Nv[i]),V.row(Nv[i])-V.row(E.col(1)(e)));
+			// alignmentTotal += alignment_function(PD1.row(Nv[i]), PD2.row(Nv[i]),V.row(Nv[i])-V.row(E.col(1)(e)));
+      alignmentTotal += alignment_function(PD1.row(Nv[i]), PD2.row(Nv[i]),PD1.row(E.col(1)(e)), PD2.row(E.col(1)(e)),V.row(Nv[i])-V.row(E.col(1)(e)));
     }
     alignment = alignmentTotal/(valenceSum+Nv.size()-1);
-    valenceSum = valenceSum == 6 ? 1 : 0;
-		valenceSum += Nv.size() == 6 ? 1 : 0;
+    valenceScore =  valenceSum >= 5 && valenceSum <= 8 ? 1 : 0;
+    valenceScore +=  valenceSum >= 10 ? -1 : 0;
+		valenceScore += Nv.size() >= 5 && Nv.size() <= 8 ? 1 : 0;
+    valenceScore +=  Nv.size() >= 10 ? -1 : 0;
 }
 void Mesh::compute_after(
 	const Eigen::MatrixXd& V,
@@ -348,7 +406,8 @@ void Mesh::compute_after(
 			alignmentTotal += alignment_function(PD1.row(neighbors[i]), PD2.row(neighbors[i]),V.row(neighbors[i])-p);
     }
 		alignment = alignmentTotal/neighbors.size();
-		valenceSum = neighbors.size() == 6 ? 1 : 0;
+		valenceSum = neighbors.size() >= 5 && neighbors.size() <= 8  ? 1 : 0;
+    valenceSum +=  neighbors.size() >= 10 ? -1 : 0;
 }
 void Mesh::qcoarsen_based_cost(
   const int e,
@@ -372,5 +431,8 @@ void Mesh::qcoarsen_based_cost(
   double vB_A = (V.rows()+1)*total_ideal/(V.rows()*(total_ideal+idealCountA-idealCountB));
   double dist = (V.row(E(e,0))-V.row(E(e,1))).norm();
   double weight = 1;//placeholder
-  cost = (vB_A + alpha)*(vB_A + alpha)*(alignB/alignA+alpha)*(alignB/alignA+alpha)*(dist*weight+alpha)*(dist*weight+alpha);
+  cost = (vB_A + alpha)*(vB_A + alpha)*(2*alignB/alignA+alpha)*(2*salignB/alignA+alpha)*(dist*weight+alpha)*(dist*weight+alpha);
+  // std::cout << alignB;
+  
 }
+

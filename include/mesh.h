@@ -18,9 +18,10 @@ public:
     VectorXd PV1, PV2;     // V          Where V is the number of the Vertices
     std::set<int> V2Fe;    // adjacent faces to vertices
     VectorXd A;            // frame field alignment vertex-based cost vector
+    VectorXd AE;           // frame field alignment edge-based cost vector
 
     int v1, v2; 
-
+    bool started = false;
     igl::decimate_pre_collapse_callback custom_pre_collapse_callback;
     igl::decimate_post_collapse_callback custom_post_collapse_callback;
     igl::decimate_stopping_condition_callback stopping_condition_callback;
@@ -39,7 +40,9 @@ public:
     void frame_field_alignment_data();
     // Cost function based on frame-field alignment
     double frame_field_alignment_data(const int e, const MatrixXi &E);
-    
+    // Get frame field alignment edges
+    void frame_field_alignment_data(const MatrixXi &E);
+
     // qcoarsen_based_cost and its helper functions 
     void compute_before(const int e,
                         const Eigen::MatrixXd &V,
