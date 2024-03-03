@@ -1,6 +1,7 @@
 #include "qslim_aligned_callbacks.h"
 #include "igl/decimate_callback_types.h"
 #include "igl/quadric_binary_plus_operator.h"
+#include "utils.h"
 #include <Eigen/LU>
 
 void qslim_aligned_callbacks(
@@ -14,7 +15,7 @@ void qslim_aligned_callbacks(
     igl::decimate_post_collapse_callback &post_collapse) {
   typedef std::tuple<Eigen::MatrixXd, Eigen::RowVectorXd, double> Quadric;
   cost_and_placement =
-      [&quadrics, &v1, &v2](
+      [&quadrics, &PD1, &PD2](
           const int e, const Eigen::MatrixXd &V, const Eigen::MatrixXi & /*F*/,
           const Eigen::MatrixXi &E, const Eigen::VectorXi & /*EMAP*/,
           const Eigen::MatrixXi & /*EF*/, const Eigen::MatrixXi & /*EI*/,
@@ -28,7 +29,10 @@ void qslim_aligned_callbacks(
         const auto &b = std::get<1>(quadric_p);
         const auto &c = std::get<2>(quadric_p);
         p = -b * A.inverse();
-        cost = p.dot(p * A) + 2 * p.dot(b) + c;
+        cost = (p.dot(p * A) + 2 * p.dot(b) + c) *
+               (alignment_function(PD1.row(E(e, 0)), PD2.row(E(e, 0)),
+                                   V.row(E(e, 1)) - V.row(E(e, 0))) +
+                1);
         // Force infs and nans to infinity
         if (std::isinf(cost) || cost != cost) {
           cost = std::numeric_limits<double>::infinity();

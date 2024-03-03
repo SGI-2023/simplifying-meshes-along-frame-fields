@@ -44,12 +44,16 @@ void per_vertex_point_to_plane_quadrics_aligned(
       }
     }
     // Inputs:
-    //   p  1 by n row point on the subspace
-    //   S  m by n matrix where rows coorespond to orthonormal spanning
+    //   p - 1 by n row point on the subspace
+    //
+    //   S - m by n matrix where rows coorespond to orthonormal spanning
     //     vectors of the subspace to which we're measuring distance (usually
     //     a plane, m=2)
-    //   weight  scalar weight
-    // Returns quadric triple {A,b,c} so that A-2*b+c measures the quadric
+    //
+    //   weight - scalar weight
+    //
+    //
+    // Returns: quadric triple {A,b,c} so that A-2*b+c measures the quadric
     const auto subspace_quadric = [&I](const Eigen::RowVectorXd &p,
                                        const Eigen::MatrixXd &S,
                                        const double weight) -> Quadric {
@@ -82,13 +86,11 @@ void per_vertex_point_to_plane_quadrics_aligned(
       // Gram Determinant = squared area of parallelogram
       double area =
           sqrt(pq.squaredNorm() * pr.squaredNorm() - pow(pr.dot(pq), 2));
-      double alignment =
-          alignment_function(PD1.row(F(f, 0)), PD2.row(F(f, 0)), p);
       Eigen::RowVectorXd e1 = pq.normalized();
       Eigen::RowVectorXd e2 = (pr - e1.dot(pr) * e1).normalized();
       Eigen::MatrixXd S(2, V.cols());
       S << e1, e2;
-      Quadric face_quadric = subspace_quadric(p, S, area * alignment);
+      Quadric face_quadric = subspace_quadric(p, S, area);
       // Throw at each corner
       for (int c = 0; c < 3; c++) {
         quadrics[F(f, c)] = igl::operator+(quadrics[F(f, c)], face_quadric);

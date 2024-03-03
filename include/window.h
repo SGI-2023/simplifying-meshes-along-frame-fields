@@ -2,6 +2,7 @@
 
 #include "mesh.h"
 #include "qslim_aligned.h"
+#include "igl/qslim.h"
 
 struct Window {
 public:

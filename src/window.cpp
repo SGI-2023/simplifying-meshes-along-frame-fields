@@ -1,4 +1,4 @@
-#include "../include/window.h"
+#include "window.h"
 
 void Window::visualizeFrameFields(RowVector3d maxCurvatureColor,
                                   RowVector3d minCurvatureColor) {
@@ -62,6 +62,12 @@ void Window::initialize_callbacks() {
       break;
     case 'Q':
     case 'q': {
+      std::cout << "Decimating into 0.75 of faces using QSlim Aligned" << std::endl;
+      std::cout << "F and V Size: " << mesh.F.rows() << ", " << mesh.V.rows()
+                << "\n";
+      std::cout << "PD/PV Size: (" << mesh.PD1.rows() << ", "
+                << mesh.PD2.rows() << ")\n";
+
       VectorXi J, I;
       qslim_aligned(mesh.V, mesh.F, mesh.F.rows() * 0.75, mesh.V, mesh.F, J, I);
 
@@ -69,6 +75,22 @@ void Window::initialize_callbacks() {
       viewer.data().set_mesh(mesh.V, mesh.F);
       viewer.data().set_face_based(true);
       break;
+    }
+    case 'S':
+    case 's': {
+      std::cout << "Decimating into 0.75 of faces using QSlim." << std::endl;
+      std::cout << "F and V Size: " << mesh.F.rows() << ", " << mesh.V.rows()
+                << "\n";
+      std::cout << "PD/PV Size: (" << mesh.PD1.rows() << ", "
+                << mesh.PD2.rows() << ")\n";
+
+      VectorXi J, I;
+      igl::qslim(mesh.V, mesh.F, mesh.F.rows() * 0.75, mesh.V, mesh.F, J, I);
+
+      viewer.data().clear();
+      viewer.data().set_mesh(mesh.V, mesh.F);
+      viewer.data().set_face_based(true);
+      break; 
     }
     case 'R':
     case 'r':

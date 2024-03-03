@@ -1,14 +1,13 @@
 #include "qslim_aligned.h"
-#include "per_vertex_point_to_plane_quadrics_aligned.h"
 #include "qslim_aligned_callbacks.h"
 
+#include "igl/per_vertex_point_to_plane_quadrics.h"
 #include "igl/connect_boundary_to_infinity.h"
 #include "igl/decimate.h"
 #include "igl/decimate_callback_types.h"
 #include "igl/edge_flaps.h"
 #include "igl/is_edge_manifold.h"
 #include "igl/max_faces_stopping_condition.h"
-#include "igl/per_vertex_point_to_plane_quadrics.h"
 #include "igl/principal_curvature.h"
 #include "igl/remove_unreferenced.h"
 
@@ -39,8 +38,7 @@ bool qslim_aligned(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
   // Quadrics per vertex
   typedef std::tuple<Eigen::MatrixXd, Eigen::RowVectorXd, double> Quadric;
   std::vector<Quadric> quadrics;
-  per_vertex_point_to_plane_quadrics_aligned(VO, FO, EMAP, EF, EI, PD1, PD2,
-                                             PV1, PV2, quadrics);
+  igl::per_vertex_point_to_plane_quadrics(VO, FO, EMAP, EF, EI, quadrics);
   // State variables keeping track of edge we just collapsed
   int v1 = -1;
   int v2 = -1;
